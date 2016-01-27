@@ -1,0 +1,22 @@
+{
+  "name": "@allmarkedup/dirscribe",
+  "version": "0.1.0",
+  "description": "Describe a recursive directory structure as a nested JSON object",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --reporter spec",
+    "lint": "jscs index.js",
+    "lint:fix": "jscs index.js --fix"
+  },
+  "author": "Mark Perkins <mark@allmarkedup.com> (http://allmarkedup.com)",
+  "license": "MIT",
+  "dependencies": {
+    "bluebird": "^3.1.5"
+  },
+  "devDependencies": {
+    "chai": "^3.4.1",
+    "chai-as-promised": "^5.2.0",
+    "jscs": "^2.9.0",
+    "mocha": "^2.4.2"
+  }
+}
