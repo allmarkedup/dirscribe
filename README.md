@@ -4,67 +4,103 @@ Describe a recursive directory structure as a nested JSON object.
 
 Supports filtering, post-processing and the ability to supply a custom callback to determine the structure of the JSON objects.
 
-Each call to the `dirscribe` function **returns a Promise**.
-
 ## Installation
 
-```bash
+```shell
 $ npm install @allmarkedup/dirscribe --save
 ```
 
 ## Usage
 
+The `dirscribe` module exports a single function with the following signature:
+
+```js
+dirscribe(<path-to-directory> [,opts]);
+```
+And returns a promise. Internally, dirscribe uses [Bluebird](http://bluebirdjs.com/) for promise creation.
+
+### Basic example
+
 ```js
 const dirscribe = require('@allmarkedup/dirscribe');
 
-const fileTree1 = dirscribe('path/to/directory');
+const fileTree = dirscribe('test/fixtures/root-directory'); // returns a Promise
 
-// returns a promise that when fulfilled resolves to:
-//
-// {
-//   "root": "",
-//   "dir": "path/to",
-//   "base": "directory",
-//   "ext": "",
-//   "name": "directory",
-//   "path": "path/to/directory",
-//   "stat": {
-//     "dev": 16777220,
-//     "mode": 16877,
-//     "nlink": 5,
-//     "uid": 501,
-//     ...
-//   },
-//   "children": [
-//     {
-//       "root": "",
-//       "dir": "path/to/directory",
-//       "base": "file-1.json",
-//       "ext": ".json",
-//       "name": "file-1",
-//       "path": "path/to/directory/file-2.json",
-//       "stat": {
-//         ...
-//       }
-//     },
-//     {
-//       "root": "",
-//       "dir": "path/to/directory",
-//       "base": "file-2.json",
-//       "ext": ".json",
-//       "name": "file-2",
-//       "path": "path/to/directory/file-2.json",
-//       "stat": {    ...
-//       }
-//     },
-//     ...
-//   ]
-// }
+fileTree.then(tree => console.dir(tree));
 
-const opts = {
-    filter: filePath => ! (/(^|\/)\.[^\/\.]/g).test(filePath), // ignore hidden files
-};
-const fileTree2 = dirscribe('path/to/directory', opts);
+// Outputs:
+// { root: '',
+//   dir: 'test/fixtures',
+//   base: 'root-directory',
+//   ext: '',
+//   name: 'root-directory',
+//   path: 'test/fixtures/root-directory',
+//   stat:
+//    { dev: 16777220,
+//      mode: 16877,
+//      nlink: 5,
+//      uid: 501,
+//      gid: 20,
+//      ... },
+//   children:
+//    [ { root: '',
+//        dir: 'test/fixtures/root-directory',
+//        base: 'file-1.md',
+//        ext: '.md',
+//        name: 'file-1',
+//        path: 'test/fixtures/root-directory/file-1.md',
+//        stat: [Object]
+//      },
+//      { root: '',
+//        dir: 'test/fixtures/root-directory',
+//        base: 'sub-directory-1',
+//        ext: '',
+//        name: 'sub-directory-1',
+//        path: 'test/fixtures/root-directory/sub-directory-1',
+//        stat: [Object],
+//        children: [Object]},
+//      { root: '',
+//        dir: 'test/fixtures/root-directory',
+//        base: 'sub-directory-2',
+//        ext: '',
+//        name: 'sub-directory-2',
+//        path: 'test/fixtures/root-directory/sub-directory-2',
+//        stat: [Object],
+//        children: [Object] } ] }
+```
+
+### Example with options
+
+```js
+const dirscribe = require('@allmarkedup/dirscribe');
+
+const fileTree = dirscribe('path/to/directory', {
+    build: (filePath, stat) => ({
+        path:     filePath,
+        modified: new Date(stat.mtime).getTime(),
+        type:     stat.isDirectory() ? 'dir' : 'file'
+    }),
+    after: items => items.sort((a, b) =>  b.modified - a.modified )
+});
+
+fileTree.then(tree => console.dir(tree));
+
+// Outputs:
+// { path: 'test/fixtures/root-directory',
+//   modified: 1453901431000,
+//   type: 'dir',
+//   children:
+//    [ { path: 'test/fixtures/root-directory/sub-directory-2',
+//        modified: 1453901475000,
+//        type: 'dir',
+//        children: [Object] },
+//      { path: 'test/fixtures/root-directory/sub-directory-1',
+//        modified: 1453901444000,
+//        type: 'dir',
+//        children: [Object] },
+//      { path: 'test/fixtures/root-directory/file-1.md',
+//        modified: 1453899612000,
+//        type: 'file' } ] }
 ```
 
 ## Options
@@ -89,12 +125,11 @@ Note that for directories, children are appended to the returned object after th
 
 ```js
 const opts = {
-    build: function(filePath, stat){
-        return {
-            path: filePath,
-            mtime: stat.mtime
-        };
-    }
+    build: (filePath, stat) => ({
+        path:     filePath,
+        modified: new Date(stat.mtime).getTime(),
+        type:     stat.isDirectory() ? 'dir' : 'file'
+    })
 };
 ```
 
