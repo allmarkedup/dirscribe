@@ -74,7 +74,7 @@ fileTree.then(tree => console.dir(tree));
 ```js
 const dirscribe = require('@allmarkedup/dirscribe');
 
-const fileTree = dirscribe('path/to/directory', {
+const fileTree = dirscribe('test/fixtures/root-directory', {
     build: (filePath, stat) => ({
         path:     filePath,
         modified: new Date(stat.mtime).getTime(),
