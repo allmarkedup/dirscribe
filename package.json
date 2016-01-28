@@ -1,6 +1,6 @@
 {
   "name": "@allmarkedup/dirscribe",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Describe a recursive directory structure as a nested JSON object",
   "tags" : ["directory", "JSON", "recursive", "describe"],
   "main": "index.js",
