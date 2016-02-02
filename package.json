@@ -1,8 +1,13 @@
 {
   "name": "@allmarkedup/dirscribe",
-  "version": "0.1.1",
+  "version": "1.0.0",
   "description": "Describe a recursive directory structure as a nested JSON object",
-  "tags" : ["directory", "JSON", "recursive", "describe"],
+  "tags": [
+    "directory",
+    "JSON",
+    "recursive",
+    "describe"
+  ],
   "main": "index.js",
   "scripts": {
     "test": "mocha --reporter spec",
