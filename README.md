@@ -185,3 +185,7 @@ const opts = {
 //     ]
 // }
 ```
+
+## Tests
+
+Use `npm test` to run tests.
